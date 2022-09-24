@@ -1,12 +1,14 @@
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
-import { BrowserView } from 'react-device-detect';
+import ReactCanvasConfetti from "react-canvas-confetti";
+import { BrowserView } from "react-device-detect";
+import Alert from "./components/Alert";
 import LetterBox from "./components/LetterBox";
 import {
   alphKeyboard,
   charIsLetter,
   isValidWord,
-  STATIC_NUM_ARRAY
+  STATIC_NUM_ARRAY,
 } from "./utils/utils";
 
 const CORRECT_WORD = "donor";
@@ -20,8 +22,8 @@ export interface LetterObj {
 const App = () => {
   const ref = useRef<HTMLInputElement>(null);
   const [currWord, setCurrWord] = useState<string>("");
-
   const [submittedWords, setSubmittedWords] = useState<LetterObj[][]>([]);
+  const [fireConfetti, setFireConfetti] = useState<boolean>(false);
 
   const handleTextChange = (e: any) => {
     if (e.target.value > 5) {
@@ -75,7 +77,8 @@ const App = () => {
     if (isCorrectWord) {
       setSubmittedWords((arr) => [...arr, newWord]);
       setCurrWord("");
-      alert("You Wonn!!");
+      // alert("You Wonn!!");
+      setFireConfetti(true);
     } else if (isCorrectWord && isLastInRow) {
       setSubmittedWords((arr) => [...arr, newWord]);
       setCurrWord("");
@@ -88,14 +91,15 @@ const App = () => {
 
   const handleKeyboardClick = (char: string) => {
     if (currWord.length >= 5 && char.length === 1) return;
-    setCurrWord(word => word + char)
-  }
+    setCurrWord((word) => word + char);
+  };
   const handleBackspace = () => {
-    setCurrWord(word => word.slice(0, word.length - 1))
-  }
+    setCurrWord((word) => word.slice(0, word.length - 1));
+  };
 
   return (
     <div className="h-screen overflow-hidden flex flex-col items-center justify-center bg-slate-900">
+      {fireConfetti && <Alert />}
       <div className="font-extrabold text-white text-5xl">Werdell</div>
       {/* <div className="mb-5 md:mb-0 md:absolute md:bottom-3 md:right-3 font-extrabold text-slate-400 text-sm">
         By Ahmad Sandid
@@ -140,11 +144,7 @@ const App = () => {
           {STATIC_NUM_ARRAY.slice(0, 5 - submittedWords.length).map((i) => (
             <div key={i} className="flex items-center justify-between mb-2">
               {[0, 1, 2, 3, 4].map((val, j) => (
-                <LetterBox
-                  char={""}
-                  state={"neutral"}
-                  isLastInRow={j === 4}
-                />
+                <LetterBox char={""} state={"neutral"} isLastInRow={j === 4} />
               ))}
             </div>
           ))}
@@ -152,7 +152,10 @@ const App = () => {
       )}
       <div className="mt-5 w-full px-3 md:w-auto">
         {alphKeyboard.map((keyRow: string[], i: number) => (
-          <div key={i} className="flex items-center justify-center mb-1 md:mb-2">
+          <div
+            key={i}
+            className="flex items-center justify-center mb-1 md:mb-2"
+          >
             {i === alphKeyboard.length - 1 && (
               <motion.div
                 onClick={() => submitWord()}
@@ -169,7 +172,7 @@ const App = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 className={`w-8 h-10 md:w-6 md:w-6 md:p-7 bg-slate-500 hover:bg-slate-400 cursor-pointer text-white text-2xl font-bold uppercase flex items-center justify-center rounded-md select-none mr-1 md:mr-2`}
-              // ${j === keyRow.length - 1 || "mr-1 md:mr-2"}
+                // ${j === keyRow.length - 1 || "mr-1 md:mr-2"}
               >
                 {char}
               </motion.div>
@@ -181,8 +184,19 @@ const App = () => {
                 whileTap={{ scale: 0.9 }}
                 className={`w-auto px-2 h-10 md:w-auto md:py-7 md:px-7 bg-slate-500 hover:bg-slate-400 cursor-pointer text-white text-2xl uppercase font-bold flex items-center justify-center rounded-md select-none `}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9.75L14.25 12m0 0l2.25 2.25M14.25 12l2.25-2.25M14.25 12L12 14.25m-2.58 4.92l-6.375-6.375a1.125 1.125 0 010-1.59L9.42 4.83c.211-.211.498-.33.796-.33H19.5a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25 0 01-2.25 2.25h-9.284c-.298 0-.585-.119-.796-.33z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9.75L14.25 12m0 0l2.25 2.25M14.25 12l2.25-2.25M14.25 12L12 14.25m-2.58 4.92l-6.375-6.375a1.125 1.125 0 010-1.59L9.42 4.83c.211-.211.498-.33.796-.33H19.5a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25 0 01-2.25 2.25h-9.284c-.298 0-.585-.119-.796-.33z"
+                  />
                 </svg>
               </motion.div>
             )}
