@@ -24,7 +24,7 @@ const App = () => {
   const [currWord, setCurrWord] = useState<string>("");
   const [submittedWords, setSubmittedWords] = useState<LetterObj[][]>([]);
   const [fireConfetti, setFireConfetti] = useState<boolean>(false);
-
+  const [invalidWordAnimation, setInvalidWordAnimation] = useState<boolean>(false)
   const handleTextChange = (e: any) => {
     if (e.target.value > 5) {
       e.preventDefault();
@@ -46,8 +46,11 @@ const App = () => {
     if (submittedWords.length >= 6) return;
     if (currWord.length !== 5) return;
     const isValid: boolean = await isValidWord(currWord);
+    console.log('isvalid:', isValid)
     if (!isValid) {
+      setInvalidWordAnimation(true);
       console.log("WOAHHH CHILL");
+      // setInvalidWordAnimation(false);
       return;
     }
     const newWord: LetterObj[] = currWord
@@ -56,7 +59,6 @@ const App = () => {
         const targetWord = CORRECT_WORD.split("").map((letter) =>
           letter.toLowerCase()
         );
-        console.table({ target: targetWord, curr: currWord.split("") });
         let state: StateType = "guessed";
         if (targetWord[i].toLowerCase() === letter.toLowerCase()) {
           state = "correct";
@@ -128,6 +130,8 @@ const App = () => {
                     char={currWord[i].toUpperCase()}
                     state={"neutral"}
                     isLastInRow={i === 4}
+                    invalidWordAnimation={invalidWordAnimation}
+                    setInvalidWordAnimation={setInvalidWordAnimation}
                   />
                 );
               } else {
@@ -136,6 +140,8 @@ const App = () => {
                     char={""}
                     state={"neutral"}
                     isLastInRow={i === 4}
+                    invalidWordAnimation={invalidWordAnimation}
+                    setInvalidWordAnimation={setInvalidWordAnimation}
                   />
                 );
               }
@@ -172,7 +178,7 @@ const App = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 className={`w-8 h-10 md:w-6 md:w-6 md:p-7 bg-slate-500 hover:bg-slate-400 cursor-pointer text-white text-2xl font-bold uppercase flex items-center justify-center rounded-md select-none mr-1 md:mr-2`}
-                // ${j === keyRow.length - 1 || "mr-1 md:mr-2"}
+              // ${j === keyRow.length - 1 || "mr-1 md:mr-2"}
               >
                 {char}
               </motion.div>

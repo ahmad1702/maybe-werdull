@@ -33,7 +33,7 @@ const Alert = (props: Props) => {
           transition={{
             duration: 1,
           }}
-          className="relative w-96 h-96 bg-gradient-to-br from-slate-400 to-slate-900 rounded-3xl"
+          className="relative w-96 h-96 bg-gradient-to-br from-teal-300 to-purple-600 rounded-3xl"
         >
           <ReactCanvasConfetti
             fire={fire}
