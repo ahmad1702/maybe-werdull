@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
-import { ChangeEventHandler, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { BrowserView } from 'react-device-detect';
 import LetterBox from "./components/LetterBox";
 import {
   alphKeyboard,
   charIsLetter,
   isValidWord,
-  STATIC_NUM_ARRAY,
+  STATIC_NUM_ARRAY
 } from "./utils/utils";
 
 const CORRECT_WORD = "donor";
@@ -41,10 +42,7 @@ const App = () => {
   };
   const submitWord = async () => {
     if (submittedWords.length >= 6) return;
-    if (currWord.length !== 5) {
-      alert("woah");
-      return;
-    }
+    if (currWord.length !== 5) return;
     const isValid: boolean = await isValidWord(currWord);
     if (!isValid) {
       console.log("WOAHHH CHILL");
@@ -88,14 +86,25 @@ const App = () => {
     }
   };
 
+  const handleKeyboardClick = (char: string) => {
+    if (currWord.length >= 5 && char.length === 1) return;
+    setCurrWord(word => word + char)
+  }
+  const handleBackspace = () => {
+    setCurrWord(word => word.slice(0, word.length - 1))
+  }
+
   return (
     <div className="h-screen overflow-hidden flex flex-col items-center justify-center bg-slate-900">
-      <div className="font-extrabold text-white text-5xl mb-5">Werdell</div>
-      <div className="absolute bottom-3 right-3 font-extrabold text-slate-400 text-sm">
+      <div className="font-extrabold text-white text-5xl">Werdell</div>
+      {/* <div className="mb-5 md:mb-0 md:absolute md:bottom-3 md:right-3 font-extrabold text-slate-400 text-sm">
+        By Ahmad Sandid
+      </div> */}
+      <div className="mb-5 font-extrabold text-slate-400 text-sm">
         By Ahmad Sandid
       </div>
       {submittedWords.map((currArr: LetterObj[], i: number) => (
-        <div key={i} className="flex justify-between mb-2">
+        <div key={i} className="flex items-center justify-between mb-2">
           {submittedWords[i].map((val, j: number) => (
             <LetterBox
               char={val.char.toString().toUpperCase()}
@@ -107,7 +116,7 @@ const App = () => {
       ))}
       {submittedWords.length < 6 && (
         <>
-          <div className="flex mb-2">
+          <div className="flex items-center justify-between mb-2">
             {[0, 1, 2, 3, 4].map((i) => {
               if (i < currWord.length) {
                 return (
@@ -129,57 +138,76 @@ const App = () => {
             })}
           </div>
           {STATIC_NUM_ARRAY.slice(0, 5 - submittedWords.length).map((i) => (
-            <div key={i} className="flex mb-2">
+            <div key={i} className="flex items-center justify-between mb-2">
               {[0, 1, 2, 3, 4].map((val, j) => (
                 <LetterBox
                   char={""}
                   state={"neutral"}
-                  isLastInRow={
-                    STATIC_NUM_ARRAY.slice(0, 5 - submittedWords.length)
-                      .length -
-                      1 ===
-                    j
-                  }
+                  isLastInRow={j === 4}
                 />
               ))}
             </div>
           ))}
         </>
       )}
-      <div className="mt-5">
+      <div className="mt-5 w-full px-3 md:w-auto">
         {alphKeyboard.map((keyRow: string[], i: number) => (
           <div key={i} className="flex items-center justify-center mb-1 md:mb-2">
-            {keyRow.map((char: string, j: number) => (
+            {i === alphKeyboard.length - 1 && (
               <motion.div
+                onClick={() => submitWord()}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className={`w-8 h-10 md:w-6 md:w-6 md:p-7 bg-slate-500 hover:bg-slate-400 cursor-pointer text-white text-2xl font-bold flex items-center justify-center rounded-md select-none ${
-                  j === keyRow.length - 1 || "mr-1 md:mr-2"
-                }`}
+                className={`mr-1 md:mr-2 w-auto px-2 h-10 md:w-auto md:py-7 md:px-3 bg-slate-500 hover:bg-slate-400 cursor-pointer text-white text-xl uppercase font-bold flex items-center justify-center rounded-md select-none `}
+              >
+                Enter
+              </motion.div>
+            )}
+            {keyRow.map((char: string, j: number) => (
+              <motion.div
+                onClick={() => handleKeyboardClick(char)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className={`w-8 h-10 md:w-6 md:w-6 md:p-7 bg-slate-500 hover:bg-slate-400 cursor-pointer text-white text-2xl font-bold uppercase flex items-center justify-center rounded-md select-none mr-1 md:mr-2`}
+              // ${j === keyRow.length - 1 || "mr-1 md:mr-2"}
               >
                 {char}
               </motion.div>
             ))}
+            {i === alphKeyboard.length - 1 && (
+              <motion.div
+                onClick={() => handleBackspace()}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className={`w-auto px-2 h-10 md:w-auto md:py-7 md:px-7 bg-slate-500 hover:bg-slate-400 cursor-pointer text-white text-2xl uppercase font-bold flex items-center justify-center rounded-md select-none `}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9.75L14.25 12m0 0l2.25 2.25M14.25 12l2.25-2.25M14.25 12L12 14.25m-2.58 4.92l-6.375-6.375a1.125 1.125 0 010-1.59L9.42 4.83c.211-.211.498-.33.796-.33H19.5a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25 0 01-2.25 2.25h-9.284c-.298 0-.585-.119-.796-.33z" />
+                </svg>
+              </motion.div>
+            )}
           </div>
         ))}
       </div>
-      <input
-        ref={ref}
-        type="text"
-        name="value"
-        id="value"
-        onKeyUp={(e) => e.key === "Enter" && submitWord()}
-        value={currWord}
-        maxLength={5}
-        autoFocus
-        onBlur={(e: React.FocusEvent<HTMLInputElement, Element>) => {
-          e.preventDefault();
-          ref?.current?.focus();
-        }}
-        onAbort={(e) => e.preventDefault()}
-        onChange={handleTextChange}
-        className="absolute -top-20 bg-neutral-300 rounded-full px-3 py-2 mb-3 outline-2 outline-transparent focus:outline-neutral-400 border-none duration-300"
-      />
+      <BrowserView>
+        <input
+          ref={ref}
+          type="text"
+          name="value"
+          id="value"
+          onKeyUp={(e) => e.key === "Enter" && submitWord()}
+          value={currWord}
+          maxLength={5}
+          autoFocus
+          onBlur={(e: React.FocusEvent<HTMLInputElement, Element>) => {
+            e.preventDefault();
+            ref?.current?.focus();
+          }}
+          onAbort={(e) => e.preventDefault()}
+          onChange={handleTextChange}
+          className="absolute -top-20 bg-neutral-300 rounded-full px-3 py-2 mb-3 outline-2 outline-transparent focus:outline-neutral-400 border-none duration-300"
+        />
+      </BrowserView>
     </div>
   );
 };
