@@ -7,7 +7,7 @@ import {
   alphKeyboard,
   charIsLetter,
   isValidWord,
-  STATIC_NUM_ARRAY
+  STATIC_NUM_ARRAY,
 } from "./utils/utils";
 
 const CORRECT_WORD = "tired";
@@ -19,11 +19,17 @@ export interface LetterObj {
 }
 
 const App = () => {
+  const controls = useAnimationControls();
   const ref = useRef<HTMLInputElement>(null);
   const [currWord, setCurrWord] = useState<string>("");
   const [submittedWords, setSubmittedWords] = useState<LetterObj[][]>([]);
   const [fireConfetti, setFireConfetti] = useState<boolean>(false);
-  const controls = useAnimationControls()
+
+  type GuessedLetterType = {
+    letter: string;
+    state: StateType;
+  };
+  const [guessedLetters, setGuessedLetters] = useState<GuessedLetterType[]>([]);
 
   const handleTextChange = (e: any) => {
     if (e.target.value > 5) {
@@ -46,21 +52,13 @@ const App = () => {
     if (submittedWords.length >= 6) return;
     if (currWord.length !== 5) return;
     const isValid: boolean = await isValidWord(currWord);
-    console.log('isvalid:', isValid)
+    console.log("isvalid:", isValid);
     if (!isValid) {
       controls.start({
-        x: [
-          3,
-          -3,
-          3,
-          -3,
-          3,
-          -3,
-          0
-        ],
+        x: [3, -3, 3, -3, 3, -3, 0],
         // rotate: 360,
         scale: 0.9,
-      })
+      });
       console.log("WOAHHH CHILL");
       // setInvalidWordAnimation(false);
       return;
@@ -77,6 +75,14 @@ const App = () => {
         } else if (targetWord.includes(letter.toLowerCase())) {
           state = "incorrect";
         }
+
+        setGuessedLetters((letters) => [
+          ...letters,
+          {
+            letter: letter.toLowerCase(),
+            state: state,
+          },
+        ]);
         return {
           char: letter,
           state: state,
@@ -110,7 +116,19 @@ const App = () => {
   const handleBackspace = () => {
     setCurrWord((word) => word.slice(0, word.length - 1));
   };
-
+  const getIndependentLetterStyles = (letter: string): string => {
+    const found = guessedLetters.filter((item) => item.letter === letter);
+    const states = found.map((item) => item.state);
+    if (states.includes("correct")) {
+      return "bg-green-700 hover:bg-green-500";
+    } else if (states.includes("incorrect")) {
+      return "bg-yellow-300/80 hover:bg-yellow-300";
+    } else if (states.includes("guessed")) {
+      return "bg-slate-800 hover:bg-slate-600";
+    } else {
+      return "bg-slate-500 hover:bg-slate-400";
+    }
+  };
   return (
     <div className="h-screen overflow-hidden flex flex-col items-center justify-center bg-slate-900">
       {fireConfetti && <Alert />}
@@ -137,7 +155,7 @@ const App = () => {
           <motion.div
             animate={controls}
             onAnimationComplete={() => {
-              controls.start({ x: 0, scale: 1})
+              controls.start({ x: 0, scale: 1 });
             }}
             className="flex items-center justify-between mb-2"
           >
@@ -178,6 +196,7 @@ const App = () => {
           >
             {i === alphKeyboard.length - 1 && (
               <motion.div
+                id="enterbutton"
                 onClick={() => submitWord()}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -191,14 +210,17 @@ const App = () => {
                 onClick={() => handleKeyboardClick(char)}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className={`w-8 h-10 md:w-6 md:w-6 md:p-7 bg-slate-500 hover:bg-slate-400 cursor-pointer text-white text-2xl font-bold uppercase flex items-center justify-center rounded-md select-none mr-1 md:mr-2`}
-              // ${j === keyRow.length - 1 || "mr-1 md:mr-2"}
+                className={`w-8 h-10 md:w-6 md:w-6 md:p-7 cursor-pointer text-white text-2xl font-bold uppercase flex items-center justify-center rounded-md select-none mr-1 md:mr-2 ${getIndependentLetterStyles(
+                  char
+                )}`}
+                // ${j === keyRow.length - 1 || "mr-1 md:mr-2"}
               >
                 {char}
               </motion.div>
             ))}
             {i === alphKeyboard.length - 1 && (
               <motion.div
+                id="backspace"
                 onClick={() => handleBackspace()}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
