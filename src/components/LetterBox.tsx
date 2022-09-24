@@ -1,18 +1,16 @@
-import { AnimationControls, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { LetterObj, StateType } from "../App";
 
 interface LetterBoxProps extends LetterObj {
     key?: string | number;
     isLastInRow: boolean;
-    invalidWordAnimation?: boolean;
-    setInvalidWordAnimation?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 type letterBoxStyle = {
     bgcolor: string;
 }
 type LetterAnimationVariant = 'normalcontainer' | 'normal' | 'shake';
-const LetterBox = ({ char, state, isLastInRow, invalidWordAnimation, setInvalidWordAnimation }: LetterBoxProps) => {
+const LetterBox = ({ char, state, isLastInRow }: LetterBoxProps) => {
 
     const [isActive, setIsActive] = useState<boolean>(false);
     const [currVariant, setCurrVariant] = useState<LetterAnimationVariant>('normalcontainer')
@@ -37,14 +35,6 @@ const LetterBox = ({ char, state, isLastInRow, invalidWordAnimation, setInvalidW
             scale: 0.9,
         },
     }
-    useEffect(() => {
-        console.log('event')
-        // if (!(invalidWordAnimation && setInvalidWordAnimation)) return;
-        if (invalidWordAnimation === true) {
-            console.log('hi')
-            setCurrVariant('shake')
-        }
-    }, [invalidWordAnimation])
 
     const boxStyles: Record<StateType, letterBoxStyle> = {
         neutral: {
@@ -69,21 +59,11 @@ const LetterBox = ({ char, state, isLastInRow, invalidWordAnimation, setInvalidW
         stiffness: 100
     }
 
-    const handleFinishAnimation = () => {
-        if (currVariant === 'shake') {
-            setCurrVariant('normalcontainer')
-        }
-        if (setInvalidWordAnimation) {
-            setInvalidWordAnimation(false)
-        }
-    }
-
     return (
         <motion.div
             transition={spring}
             animate={currVariant}
             variants={animVariants}
-            onAnimationComplete={handleFinishAnimation}
             className={`h-16 w-16 rounded-2xl flex items-center justify-center text-4xl font-bold text-white ${isLastInRow || ('mr-2')} ${boxStyles[state].bgcolor}`}
         >
             <motion.div

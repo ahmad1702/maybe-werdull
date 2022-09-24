@@ -1,6 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useAnimationControls } from "framer-motion";
 import { useRef, useState } from "react";
-import ReactCanvasConfetti from "react-canvas-confetti";
 import { BrowserView } from "react-device-detect";
 import Alert from "./components/Alert";
 import LetterBox from "./components/LetterBox";
@@ -8,10 +7,10 @@ import {
   alphKeyboard,
   charIsLetter,
   isValidWord,
-  STATIC_NUM_ARRAY,
+  STATIC_NUM_ARRAY
 } from "./utils/utils";
 
-const CORRECT_WORD = "donor";
+const CORRECT_WORD = "tired";
 
 export type StateType = "neutral" | "incorrect" | "correct" | "guessed";
 export interface LetterObj {
@@ -24,7 +23,8 @@ const App = () => {
   const [currWord, setCurrWord] = useState<string>("");
   const [submittedWords, setSubmittedWords] = useState<LetterObj[][]>([]);
   const [fireConfetti, setFireConfetti] = useState<boolean>(false);
-  const [invalidWordAnimation, setInvalidWordAnimation] = useState<boolean>(false)
+  const controls = useAnimationControls()
+
   const handleTextChange = (e: any) => {
     if (e.target.value > 5) {
       e.preventDefault();
@@ -48,7 +48,19 @@ const App = () => {
     const isValid: boolean = await isValidWord(currWord);
     console.log('isvalid:', isValid)
     if (!isValid) {
-      setInvalidWordAnimation(true);
+      controls.start({
+        x: [
+          3,
+          -3,
+          3,
+          -3,
+          3,
+          -3,
+          0
+        ],
+        // rotate: 360,
+        scale: 0.9,
+      })
       console.log("WOAHHH CHILL");
       // setInvalidWordAnimation(false);
       return;
@@ -122,7 +134,13 @@ const App = () => {
       ))}
       {submittedWords.length < 6 && (
         <>
-          <div className="flex items-center justify-between mb-2">
+          <motion.div
+            animate={controls}
+            onAnimationComplete={() => {
+              controls.start({ x: 0, scale: 1})
+            }}
+            className="flex items-center justify-between mb-2"
+          >
             {[0, 1, 2, 3, 4].map((i) => {
               if (i < currWord.length) {
                 return (
@@ -130,8 +148,6 @@ const App = () => {
                     char={currWord[i].toUpperCase()}
                     state={"neutral"}
                     isLastInRow={i === 4}
-                    invalidWordAnimation={invalidWordAnimation}
-                    setInvalidWordAnimation={setInvalidWordAnimation}
                   />
                 );
               } else {
@@ -140,13 +156,11 @@ const App = () => {
                     char={""}
                     state={"neutral"}
                     isLastInRow={i === 4}
-                    invalidWordAnimation={invalidWordAnimation}
-                    setInvalidWordAnimation={setInvalidWordAnimation}
                   />
                 );
               }
             })}
-          </div>
+          </motion.div>
           {STATIC_NUM_ARRAY.slice(0, 5 - submittedWords.length).map((i) => (
             <div key={i} className="flex items-center justify-between mb-2">
               {[0, 1, 2, 3, 4].map((val, j) => (
