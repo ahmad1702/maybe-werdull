@@ -1,7 +1,5 @@
 import axios from "axios";
 import filter from "leo-profanity";
-import Q from "q";
-import { textSpanIsEmpty } from "typescript";
 
 export const charIsLetter = (char: string) => {
   return /^[a-zA-Z]+$/.test(char);
@@ -42,9 +40,8 @@ export const isValidWord = async (str: string): Promise<boolean> => {
 
 export const STATIC_NUM_ARRAY: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-const alphKeyboard = (): string[][] => {
-  const line1 = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"];
-  const line2 = ["a", "s", "d", "f", "g", "h", "j", "k", "l"];
-  const line3 = ["z", "x", "c", "v", "b", "n", "m"];
-  return [line1, line2, line3];
-};
+export const alphKeyboard: string[][] = [
+  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+  ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+  ["z", "x", "c", "v", "b", "n", "m"],
+];

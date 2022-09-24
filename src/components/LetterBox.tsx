@@ -4,12 +4,12 @@ import { LetterObj, StateType } from "../App";
 
 interface LetterBoxProps extends LetterObj {
     key?: string | number;
+    isLastInRow: boolean;
 };
 type letterBoxStyle = {
     bgcolor: string;
 }
-const LetterBox = ({ char, state }: LetterBoxProps) => {
-    const bgcolor = 'bg-slate-800';
+const LetterBox = ({ char, state, isLastInRow }: LetterBoxProps) => {
     const boxStyles: Record<StateType, letterBoxStyle> = {
         neutral: {
             bgcolor: 'bg-slate-700',
@@ -33,7 +33,7 @@ const LetterBox = ({ char, state }: LetterBoxProps) => {
             animate={{
                 rotate: isActive ? 90 : 0
             }}
-            className={`h-16 w-16 rounded-2xl mr-2 flex items-center justify-center text-4xl font-bold text-white ${boxStyles[state].bgcolor}`}
+            className={`h-16 w-16 rounded-2xl flex items-center justify-center text-4xl font-bold text-white ${isLastInRow || ('mr-2')} ${boxStyles[state].bgcolor}`}
         >
             <motion.div
                 animate={{
