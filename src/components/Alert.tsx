@@ -48,14 +48,14 @@ const Alert = (props: Props) => {
           transition={{
             duration: 1,
           }}
-          className="relative w-96 h-96 bg-gradient-to-br from-teal-300 to-purple-600 rounded-3xl"
+          className="relative w-[80vw] md:w-[40vw] h-[60vh] bg-gradient-to-br from-teal-300 to-purple-600 rounded-3xl"
         >
           <ReactCanvasConfetti
             fire={fire}
             className="w-full h-full absolute top-0 right-0"
           />
-          <div className="w-full h-full absolute top-0 right-0 z-10 flex flex-col items-center justify-center font-extrabold text-white text-4xl">
-            <div className="mb-3">You won!!</div>
+          <div className="w-full h-full absolute top-0 right-0 z-10 flex flex-col items-center justify-center text-white">
+            <div className="font-extrabold text-5xl mb-3">You won!!</div>
             <img className="w-[80%] h-[60%] object-cover rounded-2xl overflow-hidden" src={randomImgLink} />
           </div>
         </motion.div>

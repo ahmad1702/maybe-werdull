@@ -6,22 +6,6 @@ export const charIsLetter = (char: string) => {
 };
 
 const dictionaryWordIsValid = async (str: string): Promise<boolean> => {
-  // const url: string | undefined = process.env.REACT_APP_OXFORD_API_URL;
-  // const id: string | undefined = process.env.REACT_APP_OXFORD_API_ID;
-  // const key: string | undefined = process.env.REACT_APP_OXFORD_API_KEY;
-  // if (url && id && key) {
-  //   const res = await axios.get(`${url}/search/q=${str}`, {
-  //     headers: {
-  //       "Access-Control-Allow-Origin": "*",
-  //       app_id: id,
-  //       app_key: key,
-  //     },
-  //   });
-  //   console.log(res);
-  // } else {
-  //   console.error("Dicionary info not available");
-  // }
-
   let isValid: boolean = true;
   try {
     const res = await axios.get(
@@ -31,7 +15,6 @@ const dictionaryWordIsValid = async (str: string): Promise<boolean> => {
     if (res.status === 200) {
       isValid = true;
     } else if (res.status === 404) {
-      console.log("wooahasdjf;lksajdfl;kjs");
       isValid = false;
     } else {
       isValid = true;
