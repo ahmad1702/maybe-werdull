@@ -21,6 +21,8 @@ const InvisibleInput = ({ submitWord, currWord, setCurrWord }: Props) => {
         .map((letter: string) => {
           if (charIsLetter(letter)) {
             return letter;
+          } else {
+            return "";
           }
         })
         .join("");

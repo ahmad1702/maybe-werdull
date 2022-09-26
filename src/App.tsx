@@ -1,15 +1,13 @@
 import { motion, useAnimationControls } from "framer-motion";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { BrowserView } from "react-device-detect";
 import Alert from "./components/Alert";
 import InvisibleInput from "./components/InvisibleInput";
 import Keyboard from "./components/Keyboard";
 import LetterBox from "./components/LetterBox";
 import {
-  alphKeyboard,
-  charIsLetter,
   isValidWord,
-  STATIC_NUM_ARRAY,
+  STATIC_NUM_ARRAY
 } from "./utils/utils";
 
 const CORRECT_WORD = "tired";
